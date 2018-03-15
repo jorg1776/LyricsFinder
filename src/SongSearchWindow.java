@@ -84,6 +84,7 @@ public class SongSearchWindow extends JFrame {
 				if(isInputValid(song, artist))
 				{
 					String lyrics = getLyrics(song, artist);
+					lyrics = censorLyrics(lyrics);
 					
 					if(lyrics != null)
 					{
@@ -108,6 +109,41 @@ public class SongSearchWindow extends JFrame {
 		contentPane.add(errorLabel);
 	}
 
+	private String censorLyrics(String lyrics)
+	{
+		String[] lyricsArray = lyrics.split(" ");
+		for(int i = 0; i < lyricsArray.length; i++)
+		{
+			if(lyricsArray[i].length() > 2) //only compares longer words
+			{
+				switch(lyricsArray[i].toLowerCase())
+				{
+					case "fuck":
+					case "fucking":
+					case "fuckin'":
+					case "damn":
+					case "ass":
+					case "shit":
+					case "shitting":
+					case "sex":
+					case "bitch":
+					case "bitching":
+					case "cock":
+					case "nigger":
+					case "pussy":
+						lyricsArray[i] = censorWord(lyricsArray[i]);
+						break;
+				}
+			}
+		}
+		return String.join(" ", lyricsArray);
+	}
+	
+	private String censorWord(String word)
+	{
+		return word.replaceAll(".", "*");
+	}
+	
 	private boolean isInputValid(String song, String artist)
 	{
 		if(song.equals("") || artist_TextField.getText().equals(""))
