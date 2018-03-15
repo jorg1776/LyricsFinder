@@ -18,7 +18,6 @@ import org.jsoup.select.Evaluator;
 import org.jsoup.select.QueryParser;
 import javax.swing.SwingConstants;
 import java.awt.Color;
-import java.awt.Font;
 
 public class SongSearchWindow extends JFrame {
 
