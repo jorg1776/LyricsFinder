@@ -1,5 +1,6 @@
-import java.awt.EventQueue;
+package src;
 
+import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -8,11 +9,10 @@ import javax.swing.JScrollPane;
 import javax.swing.JLabel;
 import java.awt.Font;
 
-import org.apache.commons.lang3.text.WordUtils;
+import org.apache.commons.lang3.StringUtils;
 
 public class LyricsDisplay extends JFrame
 {
-
 	private JPanel contentPane;
 
 	/**
@@ -26,8 +26,7 @@ public class LyricsDisplay extends JFrame
 			{
 				try
 				{
-					@SuppressWarnings("deprecation")
-					LyricsDisplay frame = new LyricsDisplay(WordUtils.capitalize(song), WordUtils.capitalize(artist), lyrics);
+					LyricsDisplay frame = new LyricsDisplay(StringUtils.capitalize(song), StringUtils.capitalize(artist), lyrics);
 					frame.setVisible(true);
 				} catch (Exception e)
 				{
