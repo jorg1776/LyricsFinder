@@ -15,9 +15,6 @@ public class LyricsDisplay extends JFrame
 {
 	private JPanel contentPane;
 
-	/**
-	 * Launch the application.
-	 */
 	public static void displayLyrics(String song, String artist, String lyrics)
 	{
 		EventQueue.invokeLater(new Runnable()
@@ -36,9 +33,6 @@ public class LyricsDisplay extends JFrame
 		});
 	}
 
-	/**
-	 * Create the frame.
-	 */
 	public LyricsDisplay(String song, String artist, String lyrics)
 	{
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
