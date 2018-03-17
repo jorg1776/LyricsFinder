@@ -1,6 +1,5 @@
 package src;
 
-import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -8,29 +7,18 @@ import javax.swing.JTextField;
 import javax.swing.JLabel;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
-import java.io.IOException;
 import java.awt.event.ActionEvent;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-import org.jsoup.select.Evaluator;
-import org.jsoup.select.QueryParser;
 import javax.swing.SwingConstants;
 import java.awt.Color;
 
 public class SongSearchWindow extends JFrame
 {
-
 	private JPanel contentPane;
 	private JTextField songTitle_TextField;
 	private JTextField artist_TextField;
 	private JLabel errorLabel;
 
-	/**
-	 * Create the frame.
-	 */
 	public SongSearchWindow() 
 	{
 		LyricsFinder lyricsFinder = new LyricsFinder(this);
