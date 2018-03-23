@@ -1,122 +1,45 @@
-package src;
-
 import java.io.IOException;
+import java.sql.SQLException;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-import org.jsoup.select.Evaluator;
-import org.jsoup.select.QueryParser;
-
-public class LyricsFinder
-{
-	private SongSearchWindow searchWindow;
-	
-	public LyricsFinder(SongSearchWindow searchWindow)
+public class LyricsSearch
+{	
+	public static String getLyrics(String song, String artist) throws LyricsNotFoundException
 	{
-		this.searchWindow = searchWindow;
-	}
-	
-	public String getLyrics(String songName, String artist) 
-	{
-		songName = formatInput(songName);
-		artist = formatInput(artist);
-		String url = "https://www.azlyrics.com/lyrics/" + artist + "/" + songName + ".html";
+		String lyrics = null;
 		
-		Document songPage = loadWebsite(url);
-		
-		String lyrics;
-		if(songPage != null)
-		{
-			lyrics = extractLyrics(songPage);
-			lyrics = censorLyrics(lyrics);
-		}
-		else
-		{
-			lyrics = null;
-		}
-		
-		return lyrics;
-	}
-
-	private String formatInput(String input)
-	{
-		input = input.toLowerCase();
-		input = input.replaceAll("\\s+","");
-		return input;
-	}
-	
-	private Document loadWebsite(String url)
-	{
 		try
 		{
-			Document songPage =Jsoup.connect(url).get();
-			return songPage;
+			lyrics = LyricsDatabaseManager.getLyricsFromDB(song, artist);
+			return censorLyrics(lyrics);
 		}
-		catch(IOException e)
+		catch (Exception e) 
 		{
-			searchWindow.throwError("Page not found");
-			return null;
+			try
+			{
+				lyrics = WebLyricsScraper.getLyricsFromWeb(song, artist);
+				LyricsDatabaseManager.addSongToDB(song, artist, lyrics);
+				return censorLyrics(lyrics);
+			} 
+			catch (IOException ioe)
+			{
+				throw new LyricsNotFoundException("Lyrics not found");
+			}
+			catch (SQLException sqle) 
+			{
+				System.err.println("Lyrics not updated into database");
+				sqle.printStackTrace();
+				return lyrics;
+			}
+			catch(ClassNotFoundException cnfe)
+			{
+				System.err.println("Lyrics not updated into database");
+				cnfe.printStackTrace();
+				return lyrics;
+			}
 		}
 	}
 	
-	private String extractLyrics(Document songPage)
-	{	
-		Element referenceDiv = songPage.getElementById("cf_text_top");
-		Element lyricsDiv = selectLyricsDiv(referenceDiv, "div", 1);
-		
-		String lyrics = extractLyricsFromDiv(lyricsDiv.toString());
-		
-		return lyrics;
-	}
-
-	//it works somehow. got it from StackOverflow
-	private static Element selectLyricsDiv(Element origin, String query, int count) {
-	    Element currentElement = origin;
-	    Evaluator evaluator = QueryParser.parse(query);
-	    while ((currentElement = currentElement.nextElementSibling()) != null) 
-	    {
-	        int val = 0;
-	        if (currentElement.is(evaluator)) 
-	        {
-	            if (--count == 0)
-	                return currentElement;
-	            val++;
-	        }
-	        Elements elems = currentElement.select(query);
-	        if (elems.size() > val) 
-	        {
-	            int childCount = elems.size() - val;
-	            int diff = count - childCount;
-
-	            if (diff == 0) {
-	                return elems.last();
-	            }
-	            if (diff > 0) {
-	                count -= childCount;
-	            }
-	            if (diff < 0) {
-	                return elems.get(childCount + diff);
-	            }
-	        }
-	    }
-	    if (origin.parent() != null && currentElement == null) 
-	    {
-	        return selectLyricsDiv(origin.parent(), query, count);
-	    }
-	    return currentElement;
-	}
-
-	private String extractLyricsFromDiv(String lyricsDiv)
-	{
-		String lyrics = lyricsDiv.replaceAll("<.*?>", "");
-		lyrics.replaceAll("\t", "");
-		
-		return lyrics;
-	}
-	
-	private String censorLyrics(String lyrics)
+	private static String censorLyrics(String lyrics)
 	{
 		String[] lyricsArray = lyrics.split(" ");
 		for(int i = 0; i < lyricsArray.length; i++)
@@ -146,8 +69,19 @@ public class LyricsFinder
 		return String.join(" ", lyricsArray);
 	}
 	
-	private String censorWord(String word)
+	private static String censorWord(String word)
 	{
 		return word.replaceAll(".", "*");
+	}
+
+	public static class LyricsNotFoundException extends Exception
+	{
+		private String _errorMessage;
+		public String getErrorMessage() { return _errorMessage; }
+		public LyricsNotFoundException(String message)
+		{
+			super(message);
+			_errorMessage = message;
+		}
 	}
 }
