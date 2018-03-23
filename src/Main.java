@@ -1,5 +1,3 @@
-package src;
-
 import java.awt.EventQueue;
 
 public class Main

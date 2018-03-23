@@ -1,5 +1,3 @@
-package src;
-
 import java.io.IOException;
 
 import org.jsoup.Jsoup;
@@ -9,66 +7,37 @@ import org.jsoup.select.Elements;
 import org.jsoup.select.Evaluator;
 import org.jsoup.select.QueryParser;
 
-public class LyricsFinder
+public class WebLyricsScraper
 {
-	private SongSearchWindow searchWindow;
-	
-	public LyricsFinder(SongSearchWindow searchWindow)
+	public static String getLyricsFromWeb(String song, String artist) throws IOException
 	{
-		this.searchWindow = searchWindow;
-	}
-	
-	public String getLyrics(String songName, String artist) 
-	{
-		songName = formatInput(songName);
+		song= formatInput(song);
 		artist = formatInput(artist);
-		String url = "https://www.azlyrics.com/lyrics/" + artist + "/" + songName + ".html";
 		
+		String url = "https://www.azlyrics.com/lyrics/" + artist + "/" + song + ".html";
 		Document songPage = loadWebsite(url);
 		
-		String lyrics;
-		if(songPage != null)
-		{
-			lyrics = extractLyrics(songPage);
-			lyrics = censorLyrics(lyrics);
-		}
-		else
-		{
-			lyrics = null;
-		}
-		
-		return lyrics;
+		return extractLyrics(songPage);
 	}
-
-	private String formatInput(String input)
+	
+	private static String formatInput(String input)
 	{
 		input = input.toLowerCase();
-		input = input.replaceAll("\\s+","");
+		input = input.replaceAll("\\s+","").replaceAll("'", ""); //removes spaces and apostrophes from string
 		return input;
 	}
 	
-	private Document loadWebsite(String url)
+	private static Document loadWebsite(String url) throws IOException
 	{
-		try
-		{
-			Document songPage =Jsoup.connect(url).get();
-			return songPage;
-		}
-		catch(IOException e)
-		{
-			searchWindow.throwError("Page not found");
-			return null;
-		}
+		return Jsoup.connect(url).get();
 	}
 	
-	private String extractLyrics(Document songPage)
+	private static String extractLyrics(Document songPage)
 	{	
 		Element referenceDiv = songPage.getElementById("cf_text_top");
 		Element lyricsDiv = selectLyricsDiv(referenceDiv, "div", 1);
-		
-		String lyrics = extractLyricsFromDiv(lyricsDiv.toString());
-		
-		return lyrics;
+				
+		return extractLyricsFromDiv(lyricsDiv.toString());
 	}
 
 	//it works somehow. got it from StackOverflow
@@ -108,46 +77,11 @@ public class LyricsFinder
 	    return currentElement;
 	}
 
-	private String extractLyricsFromDiv(String lyricsDiv)
+	private static String extractLyricsFromDiv(String lyricsDiv)
 	{
 		String lyrics = lyricsDiv.replaceAll("<.*?>", "");
 		lyrics.replaceAll("\t", "");
 		
 		return lyrics;
-	}
-	
-	private String censorLyrics(String lyrics)
-	{
-		String[] lyricsArray = lyrics.split(" ");
-		for(int i = 0; i < lyricsArray.length; i++)
-		{
-			if(lyricsArray[i].length() > 2) //only compares longer words
-			{
-				switch(lyricsArray[i].toLowerCase())
-				{
-					case "fuck":
-					case "fucking":
-					case "fuckin'":
-					case "damn":
-					case "ass":
-					case "shit":
-					case "shitting":
-					case "sex":
-					case "bitch":
-					case "bitching":
-					case "cock":
-					case "nigger":
-					case "pussy":
-						lyricsArray[i] = censorWord(lyricsArray[i]);
-						break;
-				}
-			}
-		}
-		return String.join(" ", lyricsArray);
-	}
-	
-	private String censorWord(String word)
-	{
-		return word.replaceAll(".", "*");
 	}
 }

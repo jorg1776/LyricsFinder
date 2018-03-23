@@ -1,5 +1,3 @@
-package src;
-
 import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -9,7 +7,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JLabel;
 import java.awt.Font;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.WordUtils;
 
 public class LyricsDisplay extends JFrame
 {
@@ -23,7 +21,7 @@ public class LyricsDisplay extends JFrame
 			{
 				try
 				{
-					LyricsDisplay frame = new LyricsDisplay(StringUtils.capitalize(song), StringUtils.capitalize(artist), lyrics);
+					LyricsDisplay frame = new LyricsDisplay(WordUtils.capitalize(song), WordUtils.capitalize(artist), lyrics);
 					frame.setVisible(true);
 				} catch (Exception e)
 				{

@@ -1,5 +1,3 @@
-package src;
-
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -20,9 +18,7 @@ public class SongSearchWindow extends JFrame
 	private JLabel errorLabel;
 
 	public SongSearchWindow() 
-	{
-		LyricsFinder lyricsFinder = new LyricsFinder(this);
-		
+	{		
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(500, 200, 329, 206);
@@ -59,17 +55,20 @@ public class SongSearchWindow extends JFrame
 				
 				if(isInputValid(song, artist))
 				{
-					String lyrics = lyricsFinder.getLyrics(song, artist);
-					
-					if(lyrics != null)
+					try 
 					{
+						String lyrics = LyricsSearch.getLyrics(song, artist);
 						LyricsDisplay.displayLyrics(song, artist, lyrics);
 						clearErrorLabel();
-					} 
+					}
+					catch (LyricsSearch.LyricsNotFoundException e) 
+					{
+						displayError(e.getErrorMessage());
+					}
 				}
 				else
 				{
-					throwError("Please enter song/artist");
+					displayError("Please enter song/artist");
 				}
 			}
 		});
@@ -96,7 +95,7 @@ public class SongSearchWindow extends JFrame
 		}
 	}
 	
-	public void throwError(String errorMessage)
+	public void displayError(String errorMessage)
 	{
 		errorLabel.setText(errorMessage);
 	}
