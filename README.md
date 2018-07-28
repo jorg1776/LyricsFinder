@@ -1,5 +1,5 @@
 # Lyrics Finder
-Prompts the user for a song title and song's artist and returns the lyrics from azlyrics.com
+Prompts the user for a song title and song's artist and returns the lyrics
 
 ## Install
 Uses jsoup for getting and parsing html document.
